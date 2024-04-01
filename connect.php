@@ -6,10 +6,10 @@ if (isset($data['data'])) {
     $jsonData = json_encode($data['data']); // Encode 'data' to JSON string
     
     // Example: Connect to your database and insert the data
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "newcoba"; // Database name
+    $servername = "sql6.freesqldatabase.com";
+    $username = "sql6695773";
+    $password = "7wcDt5kpey";
+    $database = "sql6695773";
 
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
