@@ -1,37 +1,42 @@
 <?php
-// Retrieve processed data from POST request
-$data = json_decode(file_get_contents('php://input'), true);
+// Step 1: Connect to the database
+$servername = "sql6.freesqldatabase.com";
+$username = "sql6695773";
+$password = "7wcDt5kpey";
+$database = "sql6695773";
 
-if (isset($data['data'])) {
-    $jsonData = json_encode($data['data']); // Encode 'data' to JSON string
-    
-    // Example: Connect to your database and insert the data
-    $servername = "sql6.freesqldatabase.com";
-    $username = "sql6695773";
-    $password = "7wcDt5kpey";
-    $database = "sql6695773";
+// Create connection
+$conn = new mysqli($servername, $username, $password, $database);
 
-    // Create connection
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    } else {
-        $stmt = $conn->prepare("INSERT INTO coba (data) VALUES (?)"); // Insert into 'newcoba' table, 'data' column
-        $stmt->bind_param("s", $jsonData);
-        $stmt->execute();
-        
-        if ($stmt->affected_rows > 0) {
-            echo "Data posted successfully!";
-        } else {
-            echo "Error posting data: " . $conn->error;
-        }
-        
-        $stmt->close();
-        $conn->close();
-    }
-} else {
-    echo "Data 'data' not found";
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
+
+// Step 2: Handle incoming data
+$data = json_decode($_POST["data"]);
+
+// Step 3: Insert data into the database
+$stmt = $conn->prepare("INSERT INTO coba (data) VALUES (?)");
+$stmt->bind_param("s", $data->data); // Assuming 'data' is a string
+$stmt->execute();
+
+// Step 4: Fetch the inserted data and return as JSON
+$insertedId = $conn->insert_id;
+$selectStmt = $conn->prepare("SELECT * FROM coba WHERE id = ?");
+$selectStmt->bind_param("i", $insertedId);
+$selectStmt->execute();
+$result = $selectStmt->get_result();
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    echo json_encode($row); // Send back the inserted row as JSON
+} else {
+    echo json_encode(["error" => "No data found"]); // In case of no data found
+}
+
+// Step 5: Close connections
+$stmt->close();
+$selectStmt->close();
+$conn->close();
 ?>
