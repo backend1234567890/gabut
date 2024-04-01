@@ -22,7 +22,7 @@ $stmt->bind_param("s", $data->data); // Assuming 'data' is a string
 $stmt->execute();
 
 // Step 4: Fetch the inserted data and return as JSON
-$insertedId = $conn->insert_id;
+$insertedId = $stmt->insert_id;
 $selectStmt = $conn->prepare("SELECT * FROM coba WHERE id = ?");
 $selectStmt->bind_param("i", $insertedId);
 $selectStmt->execute();
